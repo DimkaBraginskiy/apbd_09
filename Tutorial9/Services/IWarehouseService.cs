@@ -2,7 +2,8 @@
 
 public interface IWarehouseService
 {
-    public Task<int> AddWarehouseProductAsync(
+    
+    public Task<int> CreateProductWarehouseAsync(
         CancellationToken token,
         int IdProduct,
         int IdWarehouse,

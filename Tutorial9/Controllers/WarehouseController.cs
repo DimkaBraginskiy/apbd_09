@@ -5,10 +5,12 @@ using Tutorial9.Services;
 
 namespace Tutorial9.Controllers;
 
+
 [Route("api/[controller]")]
 [ApiController]
-public class WarehouseController
+public class WarehouseController : ControllerBase
 {
+    
     private readonly IWarehouseService _warehouseService;
     
     public WarehouseController(IWarehouseService warehouseService)
@@ -17,17 +19,23 @@ public class WarehouseController
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddWarehouseProductAsync(CancellationToken token,
-        [FromBody] WarehouseProductCreateDto warehouseProductDto)
+    public async Task<IActionResult> CreateWarehouseProductAsync(CancellationToken token,
+        [FromBody] ProductWarehouseCreateDto productWarehouseDto)
     {
-        if (warehouseProductDto == null)
+        try
         {
-            return BadRequest("Warehouse_Product can not be null");
+            var id = await _warehouseService.CreateProductWarehouseAsync(
+                token, 
+                productWarehouseDto.IdProduct,
+                productWarehouseDto.IdWarehouse,
+                productWarehouseDto.Amount,
+                productWarehouseDto.CreatedAt);
+
+            return Ok( new { Id = id});
         }
-        
-        if(!ModelState.IsValid)
+        catch (Exception ex)
         {
-            return BadRequest(ModelState);
+            return BadRequest(new { Message = ex.Message });
         }
     }
 }
