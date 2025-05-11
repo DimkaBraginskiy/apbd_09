@@ -20,7 +20,7 @@ public class OrderRepository : IOrderRepository
     {
         await using var connection = new SqlConnection(_connectionString);
         await using var command = new SqlCommand("" +
-                                                 "SELECT 1 FROM Order WHERE IdOrder = @IdOrder", connection);
+                                                 "SELECT 1 FROM [Order] WHERE IdOrder = @IdOrder", connection);
         command.Parameters.AddWithValue("@IdOrder", IdOrder);
 
         await connection.OpenAsync(token);
@@ -33,7 +33,7 @@ public class OrderRepository : IOrderRepository
     {
         await using var connection = new SqlConnection(_connectionString);
         await using var command = new SqlCommand("" +
-                                                 "SELECT 1 FROM Order WHERE IdProduct = @IdProduct", connection);
+                                                 "SELECT 1 FROM [Order] WHERE IdProduct = @IdProduct", connection);
         command.Parameters.AddWithValue("@IdProduct", IdProduct);
 
         await connection.OpenAsync(token);
@@ -49,11 +49,11 @@ public class OrderRepository : IOrderRepository
 
         await using var connection = new SqlConnection(_connectionString);
         await using var command = new SqlCommand(
-            "SELECT TOP 1 o.IdOrder, o.IdProduct, o.Amount, o.CreatedAt, o.FulfilledAt, p.Price"+ 
-            "FROM [Order] o"+ 
+            "SELECT TOP 1 o.IdOrder, o.IdProduct, o.Amount, o.CreatedAt, o.FulfilledAt, p.Price "+ 
+            "FROM [Order] o "+ 
             "JOIN [Product] p ON p.IdProduct = o.IdProduct " +
-            "LEFT JOIN [Product_Warehouse] pw ON pw.IdOrder = o.IdOrder"+ 
-            "WHERE 1=1;", connection);
+            "LEFT JOIN [Product_Warehouse] pw ON pw.IdOrder = o.IdOrder "+ 
+            "WHERE 1=1", connection);
 
         if (filter.IdProduct != null)
         {
@@ -86,7 +86,7 @@ public class OrderRepository : IOrderRepository
                 CreatedAt = reader.GetDateTime(reader.GetOrdinal("CreatedAt")),
                 FulfilledAt = reader.IsDBNull(reader.GetOrdinal("FulfilledAt"))
                     ? null
-                    : reader.GetDateTime(reader.GetOrdinal("FilfilledAt"))
+                    : reader.GetDateTime(reader.GetOrdinal("FulfilledAt"))
             };
             return order;
         }
