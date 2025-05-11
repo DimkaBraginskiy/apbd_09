@@ -24,19 +24,6 @@ public class WarehouseRepository : IWarehouseRepository
 
         return result != null;
     }
-
-    public async Task<bool> ProductExistsInOrderAsync(CancellationToken token, int IdProduct)
-    {
-        using var connection = new SqlConnection(_connectionString);
-        var command = new SqlCommand("" +
-                                     "SELECT 1 FROM Order WHERE IdProduct = @IdProduct", connection);
-        command.Parameters.AddWithValue("@IdProduct", IdProduct);
-
-        await connection.OpenAsync(token);
-        var result = await command.ExecuteScalarAsync(token);
-
-        return result != null;
-    }
     
 
     public async Task<int> CreateProductWarehouseAsync(

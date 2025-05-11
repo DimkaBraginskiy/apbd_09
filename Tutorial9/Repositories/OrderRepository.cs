@@ -5,7 +5,7 @@ using Tutorial9.Models.DTOs;
 
 namespace Tutorial9.Repositories;
 
-public class OrderRepository
+public class OrderRepository : IOrderRepository
 {
     private readonly string _connectionString;
     private readonly IProductRepository _productRepository;
@@ -49,10 +49,11 @@ public class OrderRepository
 
         await using var connection = new SqlConnection(_connectionString);
         await using var command = new SqlCommand(
-            "SELECT TOP 1 o.Idorder, p.Price FROM [Order] o" +
-            "JOIN [Product] p ON p.IdProduct = o.IdProduct" +
-            "LEFT JOIN [Product_Warehouse] pw on pw.IdProduct = p.IdProduct" +
-            "WHERE 1 = 1;", connection);
+            "SELECT TOP 1 o.IdOrder, o.IdProduct, o.Amount, o.CreatedAt, o.FulfilledAt, p.Price"+ 
+            "FROM [Order] o"+ 
+            "JOIN [Product] p ON p.IdProduct = o.IdProduct " +
+            "LEFT JOIN [Product_Warehouse] pw ON pw.IdOrder = o.IdOrder"+ 
+            "WHERE 1=1;", connection);
 
         if (filter.IdProduct != null)
         {
@@ -113,7 +114,7 @@ public class OrderRepository
         {
             await using var command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@FulfilledAt", DateTime.Now);
-            command.Parameters.AddWithValue("@IdOrder", dto.IdProduct);
+            command.Parameters.AddWithValue("@IdOrder", dto.IdOrder);
 
             int affected = await command.ExecuteNonQueryAsync(token);
             if (affected == 0)

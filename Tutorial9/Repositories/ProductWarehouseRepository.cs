@@ -1,6 +1,6 @@
 ﻿namespace Tutorial9.Repositories;
 
-public class ProductWarehouseRepository
+public class ProductWarehouseRepository : IProductWarehouseRepository
 {
     
 }

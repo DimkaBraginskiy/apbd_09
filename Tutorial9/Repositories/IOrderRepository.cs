@@ -10,4 +10,5 @@ public interface IOrderRepository
     public Task<Order> GetEligibleOrderAsync(CancellationToken token, SimpleOrderFilter filter);
 
     public Task<int> UpdateFulfilledAtAsync(CancellationToken token, FulfillOrderRequestDto dto);
+    public Task<bool> ProductExistsInOrderAsync(CancellationToken token, int IdProduct);
 }

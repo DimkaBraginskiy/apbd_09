@@ -11,5 +11,5 @@ public interface IWarehouseRepository
     
 
     public Task<bool> WarehouseExistsAsync(CancellationToken token, int IdWarehouse);
-    public Task<bool> ProductExistsInOrderAsync(CancellationToken token, int IdProduct);
+
 }

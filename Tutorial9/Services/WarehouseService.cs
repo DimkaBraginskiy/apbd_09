@@ -1,15 +1,26 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Tutorial9.Models.DTOs;
 using Tutorial9.Repositories;
 
 namespace Tutorial9.Services;
 
 public class WarehouseService : IWarehouseService
 {
-    private readonly IWarehouseRepository _repository;
+    private readonly IOrderRepository _orderRepository;
+    private readonly IProductRepository _productRepository;
+    private readonly IWarehouseRepository _warehouseRepository;
+    private readonly IProductWarehouseRepository _productWarehouseRepository;
     
-    public WarehouseService(IWarehouseRepository repository)
+    public WarehouseService(
+        IOrderRepository orderRepository,
+        IProductRepository productRepository,
+        IWarehouseRepository warehouseRepository,
+        IProductWarehouseRepository productWarehouseRepository)
     {
-        _repository = repository;
+        _orderRepository = orderRepository;
+        _productRepository = productRepository;
+        _warehouseRepository = warehouseRepository;
+        _productWarehouseRepository = productWarehouseRepository;
     }
     
     public async Task<int> CreateProductWarehouseAsync(
@@ -19,32 +30,54 @@ public class WarehouseService : IWarehouseService
         int Amount,
         DateTime CreatedAt)
     {
-        // 1. Check if Product exists.
-        // In SQL Procedure
-        
-        // 2. Check if Warehouse exists.
-        // In SQL Procedure
-        
-        
-        // 3. Check if the Amount > 0.
         if (Amount <= 0)
         {
             throw new ArgumentException("Amount must be greater than 0.");
         }
 
-        // 4. Check if the CreatedAt is not in the future.
+        
         if (CreatedAt > DateTime.Now)
         {
             throw new ArgumentException("CreatedAt can not be a future date.");
         }
+        
+        if(await _productRepository.ProductExistsAsync(token, IdProduct) == false)
+        {
+            throw new ArgumentException("Product does not exist.");
+        }
+        
+        if(await _warehouseRepository.WarehouseExistsAsync(token, IdWarehouse) == false)
+        {
+            throw new ArgumentException("Warehouse does not exist.");
+        }
+        
+        if(await _orderRepository.ProductExistsInOrderAsync(token, IdProduct) == false)
+        {
+            throw new ArgumentException("Product does not exist in order.");
+        }
+
+        var order = await _orderRepository.GetEligibleOrderAsync(token, new SimpleOrderFilter
+        {
+            IdProduct = IdProduct,
+            Amount = Amount,
+            CreatedAt = CreatedAt
+        });
+
+        if (order == null)
+            throw new Exception("No matching order found.");
 
 
-        var id = await _repository.CreateProductWarehouseAsync(
-            token,
-            IdProduct,
-            IdWarehouse,
-            Amount,
-            CreatedAt);
+        var fulfillDto = new FulfillOrderRequestDto
+        {
+            IdProduct = IdProduct,
+            IdWarehouse = IdWarehouse,
+            IdOrder = order.IdOrder,
+            Amount = Amount
+        };
+            
+        
+
+        var id = await _orderRepository.UpdateFulfilledAtAsync(token, fulfillDto);
 
         return id;
     }

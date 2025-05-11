@@ -15,11 +15,5 @@ public class FulfillOrderRequestDto
     [Required]
     public DateTime CreatedAt { get; set; }
     
-    public FulfillOrderRequestDto(int idProduct, int idWarehouse, int amount, DateTime createdAt)
-    {
-        IdProduct = idProduct;
-        IdWarehouse = idWarehouse;
-        Amount = amount;
-        CreatedAt = createdAt;
-    }
+
 }

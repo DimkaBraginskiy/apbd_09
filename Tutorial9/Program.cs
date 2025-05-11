@@ -9,6 +9,9 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<IDbService, DbService>();
 builder.Services.AddScoped<IWarehouseService, WarehouseService>();
 builder.Services.AddScoped<IWarehouseRepository, WarehouseRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductWarehouseRepository, ProductWarehouseRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
 
 builder.Services.AddOpenApi();
