@@ -48,12 +48,15 @@ public class OrderRepository : IOrderRepository
     {
 
         await using var connection = new SqlConnection(_connectionString);
-        await using var command = new SqlCommand(
+        /*await using var command = new SqlCommand(
             "SELECT TOP 1 o.IdOrder, o.IdProduct, o.Amount, o.CreatedAt, o.FulfilledAt, p.Price "+ 
             "FROM [Order] o "+ 
             "JOIN [Product] p ON p.IdProduct = o.IdProduct " +
             "LEFT JOIN [Product_Warehouse] pw ON pw.IdOrder = o.IdOrder "+ 
-            "WHERE 1=1", connection);
+            "WHERE 1=1", connection);*/
+        
+        await using var command = new SqlCommand(
+            "SELECT TOP 1 * FROM [Order] o WHERE 1=1", connection);
 
         if (filter.IdProduct != null)
         {
@@ -63,14 +66,15 @@ public class OrderRepository : IOrderRepository
 
         if (filter.Amount != null)
         {
-            command.CommandText += " AND o.Amount <= @Amount";
+            command.CommandText += " AND o.Amount >= @Amount";
             command.Parameters.AddWithValue("@Amount", filter.Amount);
         }
 
         if (filter.CreatedAt != null)
         {
-            command.CommandText += " AND o.CreatedAt <= @CreatedAt";
+            command.CommandText += " AND o.CreatedAt >= @CreatedAt";
             command.Parameters.AddWithValue("@CreatedAt", filter.CreatedAt);
+            Console.WriteLine($"CreatedAt: {filter.CreatedAt}");
         }
 
         await connection.OpenAsync(token);

@@ -12,6 +12,4 @@ public class SimpleOrderFilter
         Amount = amount;
         CreatedAt = createdAt;
     }
-    
-    
 }

@@ -30,6 +30,7 @@ public class WarehouseController : ControllerBase
                 productWarehouseDto.IdWarehouse,
                 productWarehouseDto.Amount,
                 productWarehouseDto.CreatedAt);
+            
 
             return Ok( new { Id = id});
         }
