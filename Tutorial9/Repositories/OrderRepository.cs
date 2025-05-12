@@ -92,6 +92,7 @@ public class OrderRepository : IOrderRepository
                     ? null
                     : reader.GetDateTime(reader.GetOrdinal("FulfilledAt"))
             };
+            Console.WriteLine("Order found: " + order.IdOrder);
             return order;
         }
         return null;
@@ -119,6 +120,7 @@ public class OrderRepository : IOrderRepository
             await using var command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@FulfilledAt", DateTime.Now);
             command.Parameters.AddWithValue("@IdOrder", dto.IdOrder);
+            command.Transaction = (SqlTransaction)transaction;
 
             int affected = await command.ExecuteNonQueryAsync(token);
             if (affected == 0)
