@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using Tutorial9.Models.DTOs;
 using Tutorial9.Services;
 
 namespace Tutorial9.Repositories;
@@ -14,9 +15,9 @@ public class WarehouseRepository : IWarehouseRepository
     
     public async Task<bool> WarehouseExistsAsync(CancellationToken token, int IdWarehouse)
     {   
-        using var connection = new SqlConnection(_connectionString);
-        using var command = new SqlCommand("" +
-                                           "SELECT 1 FROM Warehouse WHERE IdWarehouse = @IdWarehouse", connection);
+        await using var connection = new SqlConnection(_connectionString);
+        await using var command = new SqlCommand("" +
+                                                "SELECT 1 FROM Warehouse WHERE IdWarehouse = @IdWarehouse", connection);
         command.Parameters.AddWithValue("@IdWarehouse", IdWarehouse);
 
         await connection.OpenAsync(token);
@@ -35,4 +36,6 @@ public class WarehouseRepository : IWarehouseRepository
     {
         return IdProduct;
     }
+    
+
 }

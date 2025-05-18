@@ -25,11 +25,25 @@ public class WarehouseController : ControllerBase
         try
         {
             var id = await _warehouseService.CreateProductWarehouseAsync(
-                token, 
-                productWarehouseDto.IdProduct,
-                productWarehouseDto.IdWarehouse,
-                productWarehouseDto.Amount,
-                productWarehouseDto.CreatedAt);
+                token, productWarehouseDto);
+            
+
+            return Ok( new { Id = id});
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
+    
+    [HttpPost("procedure")]
+    public async Task<IActionResult> CreateWarehosueProductWithProcedureAsync(CancellationToken token, 
+        [FromBody] ProductWarehouseCreateDto productWarehouseDto)
+    {
+        try
+        {
+            var id = await _warehouseService.CreateProductWarehouseWithProcedureAsync(
+                token, productWarehouseDto);
             
 
             return Ok( new { Id = id});

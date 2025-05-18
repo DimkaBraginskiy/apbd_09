@@ -24,43 +24,39 @@ public class WarehouseService : IWarehouseService
     }
     
     public async Task<int> CreateProductWarehouseAsync(
-        CancellationToken token,
-        int IdProduct,
-        int IdWarehouse,
-        int Amount,
-        DateTime CreatedAt)
+        CancellationToken token, ProductWarehouseCreateDto dto)
     {
-        if (Amount <= 0)
+        if (dto.Amount <= 0)
         {
             throw new ArgumentException("Amount must be greater than 0.");
         }
 
         
-        if (CreatedAt > DateTime.Now)
+        if (dto.CreatedAt > DateTime.Now)
         {
             throw new ArgumentException("CreatedAt can not be a future date.");
         }
         
-        if(await _productRepository.ProductExistsAsync(token, IdProduct) == false)
+        if(await _productRepository.ProductExistsAsync(token, dto.IdProduct) == false)
         {
             throw new ArgumentException("Product does not exist.");
         }
         
-        if(await _warehouseRepository.WarehouseExistsAsync(token, IdWarehouse) == false)
+        if(await _warehouseRepository.WarehouseExistsAsync(token, dto.IdWarehouse) == false)
         {
             throw new ArgumentException("Warehouse does not exist.");
         }
         
-        if(await _orderRepository.ProductExistsInOrderAsync(token, IdProduct) == false)
+        if(await _orderRepository.ProductExistsInOrderAsync(token, dto.IdProduct) == false)
         {
             throw new ArgumentException("Product does not exist in order.");
         }
 
         var order = await _orderRepository.GetEligibleOrderAsync(token, new SimpleOrderFilter
         {
-            IdProduct = IdProduct,
-            Amount = Amount,
-            CreatedAt = CreatedAt
+            IdProduct = dto.IdProduct,
+            Amount = dto.Amount,
+            CreatedAt = dto.CreatedAt
         });
 
         if (order == null)
@@ -69,10 +65,10 @@ public class WarehouseService : IWarehouseService
 
         var fulfillDto = new FulfillOrderRequestDto
         {
-            IdProduct = IdProduct,
-            IdWarehouse = IdWarehouse,
+            IdProduct = dto.IdProduct,
+            IdWarehouse = dto.IdWarehouse,
             IdOrder = order.IdOrder,
-            Amount = Amount
+            Amount = dto.Amount
         };
             
         
@@ -80,5 +76,15 @@ public class WarehouseService : IWarehouseService
         var id = await _orderRepository.UpdateFulfilledAtAsync(token, fulfillDto);
 
         return id;
+    }
+
+
+    public async Task<int> CreateProductWarehouseWithProcedureAsync(CancellationToken token,
+        ProductWarehouseCreateDto dto)
+    {
+        var result = await _productWarehouseRepository.CreateProductWarehouseWithProcedureAsync(
+            token, dto);
+
+        return result;
     }
 }
